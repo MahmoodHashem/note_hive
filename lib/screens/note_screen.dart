@@ -11,12 +11,11 @@ class NoteScreen extends StatefulWidget {
 
 class _NoteScreenState extends State<NoteScreen> {
 
-
+  TextEditingController title = TextEditingController();
+  TextEditingController content = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
-    String? title;
-    String? content;
     return Scaffold(
       appBar: AppBar(
         title: const Text('Note App'),
@@ -28,29 +27,25 @@ class _NoteScreenState extends State<NoteScreen> {
           child: Column(
             children: [
               TextField(
+             controller: title,
                 decoration: InputDecoration(
                   labelText: "Title",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10)
                   )
                 ),
-                onChanged: (newTitle){
-                  title = newTitle;
-                },
               ),
               SizedBox(
                 height: 10,
               ),
               TextField(
+                controller: content,
                 decoration: InputDecoration(
                   labelText: "Contents",
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10)
                   ),
                 ),
-                onChanged: (newContent){
-                  content = newContent;
-                },
               ),
             SizedBox(
               height: 15,
@@ -66,8 +61,9 @@ class _NoteScreenState extends State<NoteScreen> {
                 onPressed: (){
                   setState(() {
                     noteBoxes.put("key_${title!}",
-                        Note(title: title!, content: content!));
-
+                        Note(title: title.text, content: content.text));
+                    title.clear();
+                    content.clear();
                   });
                 },
               child: Text("Add To List",
@@ -83,16 +79,39 @@ class _NoteScreenState extends State<NoteScreen> {
                     color: Colors.blueGrey,
                 margin: EdgeInsets.all(10),
                 child: ListView.builder(
-                  itemCount: 7,
+                  itemCount: noteBoxes.length,
                     itemBuilder: (context, index){
+                    Note note = noteBoxes.getAt(index)!;
                       return Card(
                         child: ListTile(
-                          title: Text('mahmood'),
+                          leading:  IconButton(onPressed: (){
+
+                            setState(() {
+                              noteBoxes.deleteAt(index);
+                            });
+                          }, icon: Icon(Icons.remove_circle_outline)),
+                          title: Text(note.title),
+                          subtitle: Text(note.content),
                         ),
                       );
                     }
                 ),
-              ))
+              ),),
+              ElevatedButton(
+                style: ButtonStyle(
+                  backgroundColor: MaterialStatePropertyAll(Colors.red),
+                ),
+                  onPressed:(){
+                setState(() {
+                  noteBoxes.clear();
+                });
+              }, child: Text("Delete",
+              style: TextStyle(
+                fontSize: 20,
+              ),
+              ),
+
+              )
             ],
           ),
         ),
