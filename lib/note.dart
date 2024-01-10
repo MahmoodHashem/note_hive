@@ -1,3 +1,4 @@
+
 import 'package:hive/hive.dart';
 
 part 'note.g.dart';
@@ -12,6 +13,4 @@ class Note {
 
   @HiveField(1)
   String content;
-
-
 }

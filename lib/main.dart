@@ -9,8 +9,8 @@ import 'screens/note_screen.dart';
 void main() async{
   await Hive.initFlutter();
   Hive.registerAdapter(NoteAdapter());
-   noteBoxes = await Hive.openBox('noteBox');
-  runApp( MaterialApp(
+  noteBoxes = await Hive.openBox('noteBox');
+  runApp( const MaterialApp(
       home: MyApp()));
 }
 
