@@ -4,13 +4,13 @@ import 'package:note_hive/model/boxes.dart';
 import 'package:note_hive/note.dart';
 import 'package:note_hive/screens/main_screen.dart';
 import 'package:provider/provider.dart';
-import 'screens/note_screen.dart';
+import 'package:note_hive/screens/contents.dart';
 
 
 void main() async{
   await Hive.initFlutter();
   Hive.registerAdapter(NoteAdapter());
-  noteBoxes = await Hive.openBox('noteBox');
+  notesBox = await Hive.openBox<Note>('noteBox');
   runApp( const MaterialApp(
       home: MyApp()));
 }
