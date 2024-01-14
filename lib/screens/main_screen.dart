@@ -51,24 +51,42 @@ class _MainScreenState extends State<MainScreen> {
                 height: 7,
               ),
               Expanded(
-                  child: ValueListenableBuilder(
-                    valueListenable: notesBox.listenable(),
-                    builder: (context,Box box, widget) {
-                      return ListView.separated(
-                        itemCount: box.values.length,
-                        itemBuilder: (context, index) {
-                          final note = box.getAt(index);
-                          return NoteTile(
-                              title: note.title ?? 'title',
-                              subtitle: note.content ?? 'content',
-                              date: note.date ?? 'date');
-                        },
-                        separatorBuilder: (context, index) {
-                          return SizedBox(
-                            height: 10,
-                          );
-                        },
-                      ); }
+                  child: FutureBuilder(
+                    future: Hive.openBox('noteBox'),
+                    builder: (context,snapshot){
+                      if(snapshot.connectionState == ConnectionState.done){
+                      return ValueListenableBuilder(
+                          valueListenable: notesBox.listenable(),
+                          builder: (context,Box box, widget) {
+                            return ListView.separated(
+                              itemCount: box.length,
+                              itemBuilder: (context, index) {
+                                final note = box.getAt(index);
+                                return NoteTile(
+                                  title: note.title ?? 'title',
+                                  subtitle: note.content ?? 'content',
+                                  date: note.date ?? 'date',
+                                  delete: (){
+                                    box.deleteAt(index);
+                                  },
+                                  // edit: (){
+                                  //     Navigator.push(context, MaterialPageRoute(builder: (c) => Content()));
+                                  // },
+                                );
+                              },
+                              separatorBuilder: (context, index) {
+                                return SizedBox(
+                                  height: 10,
+                                );
+                              },
+                            ); }
+                      );
+                      }else{
+                        return Center(
+                          child: Text('no data'),
+                        );
+                      }
+                    }
                   ),
 
               ),

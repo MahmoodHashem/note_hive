@@ -91,6 +91,7 @@ class _ContentState extends State<Content> {
                     textInputAction: TextInputAction.newline,
                     keyboardType: TextInputType.multiline,
                   ),
+
                 ),
               ),
             ),
@@ -102,6 +103,7 @@ class _ContentState extends State<Content> {
                   final newNote = Note(title: title.text,  content: content.text, date: DateTime.now().toString());
                
                   notesBox.add(newNote);
+
                   Navigator.pop(context);
                 }, child: Text("Save", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),),
                 MaterialButton(onPressed: (){

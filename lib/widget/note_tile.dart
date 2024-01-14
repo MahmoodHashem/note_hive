@@ -4,11 +4,17 @@ import 'package:flutter/material.dart';
 
 
 class NoteTile extends StatelessWidget {
-   NoteTile({Key? key, required this.title, required this.subtitle, required this.date}) : super(key: key);
+   NoteTile({Key? key, required this.title,
+     required this.subtitle,
+     required this.date,
+     required this.delete,
+     }) : super(key: key);
 
   final String title;
   final String subtitle;
   final String date;
+  final Function()? delete;
+ // final Function()? edit;
 
   @override
   Widget build(BuildContext context) {
@@ -22,6 +28,8 @@ class NoteTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           ListTile(
+            // onTap: edit,
+            trailing: IconButton(onPressed: delete, icon: Icon(Icons.delete, size: 25,)),
             title: Text(title),
             subtitle: Text(subtitle),
           ),
