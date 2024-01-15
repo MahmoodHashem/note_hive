@@ -26,7 +26,7 @@ class NoteAdapter extends TypeAdapter<Note> {
   @override
   void write(BinaryWriter writer, Note obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
