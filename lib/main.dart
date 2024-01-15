@@ -3,8 +3,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:note_hive/model/boxes.dart';
 import 'package:note_hive/note.dart';
 import 'package:note_hive/screens/main_screen.dart';
-import 'package:provider/provider.dart';
-import 'package:note_hive/screens/contents.dart';
+
 
 
 void main() async{
@@ -20,6 +19,6 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  MainScreen();
+    return const MainScreen();
   }
 }
