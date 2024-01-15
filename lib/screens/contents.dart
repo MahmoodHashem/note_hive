@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:note_hive/model/boxes.dart';
 import 'package:note_hive/note.dart';
-import 'package:intl/intl.dart';
+import 'package:intl/intl.dart' as dateFormat;
+import 'package:note_hive/widget/text_field.dart';
+import 'package:auto_direction/auto_direction.dart';
+
 
 class Content extends StatefulWidget {
-   const Content({Key? key, this.title, this.content, this.index}) : super(key: key);
+  const  Content({Key? key, this.title, this.content, this.index}) : super(key: key);
 
   final String? title;
   final String? content;
@@ -17,19 +20,43 @@ class Content extends StatefulWidget {
 
 class _ContentState extends State<Content> {
 
-  final title = TextEditingController();
-  final content = TextEditingController();
-  final date = TextEditingController();
-
-final dateCreated = DateFormat.yMMMEd().format(DateTime.now());
-
+  late FocusNode specialFocusNode;
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    //create the FocusNode as soon as the page is created
+    super.initState();
+    specialFocusNode = FocusNode();
 
     if(widget.title != null && widget.content != null){
       title.text = widget.title!;
       content.text = widget.content!;
     }
+  }
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    super.dispose();
+    specialFocusNode.dispose();
+  }
+
+  final title = TextEditingController();
+  final content = TextEditingController();
+
+
+
+  final createdDate = dateFormat.DateFormat('h:mm a, d MMMM y').format(DateTime.now());
+
+
+  bool isRTL = false;
+  String titleText = "";
+  String contentText = "";
+
+  bool isFocused = false;
+
+
+  @override
+  Widget build(BuildContext context) {
 
     return SafeArea(
       child: Scaffold(
@@ -51,29 +78,29 @@ final dateCreated = DateFormat.yMMMEd().format(DateTime.now());
               const SizedBox(
                 height: 10,
               ),
-              TextField(
-                autofocus: true,
-                controller: title,
-                maxLines: 1,
-                maxLength: 50,
-                cursorHeight: 40,
-                cursorColor: const Color(0xffC99180),
-                decoration: const InputDecoration(
-                  border: InputBorder.none,
-                  hintText: 'Title',
-                  hintStyle: TextStyle(
-                    fontSize: 35
-                  )
-                ),
-                style: const TextStyle(
-                  fontSize: 35,
-                  fontWeight: FontWeight.bold,
-                ),
-                ),
+             AutoDirection(
+               text: titleText,
+               onDirectionChange: (isRtl){
+                  setState(() {
+                    isRTL = isRtl;
+                  });
+               },
+               child: AppTextField(
+                 onChanged: (src){
+                   setState(() {
+                     titleText = src;
+                   });
+                 },
+                   autoFocus: true,
+                   size: 30,
+                   hint: 'Title',
+                   controller: title,
+                   textInput: TextInputType.multiline),
+             ),
               const SizedBox(
                 height: 15,
               ),
-              Text(dateCreated,
+              Text(createdDate,
                 style:const TextStyle(
                   color: Color(0xffC99180),
                   fontSize: 12
@@ -82,29 +109,44 @@ final dateCreated = DateFormat.yMMMEd().format(DateTime.now());
                 height: 20,
               ),
               Expanded(
-                child: Container(
-
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(8)
-                  ),
-                  padding: const EdgeInsets.all(8),
-                  margin: const EdgeInsets.only(bottom: 18),
-                  child: SingleChildScrollView(
-                   // reverse: true,
-                    child: TextField(
-                      controller: content,
-                      cursorHeight: 20,
-                      decoration: const InputDecoration(
-                        border: InputBorder.none,
-                        hintText: 'Contents...',
-                      ),
-                      cursorColor: const Color(0xffC99180),
-                      maxLines: null,
-                      textInputAction: TextInputAction.newline,
-                      keyboardType: TextInputType.multiline,
+                child: GestureDetector(
+                  onTap: (){
+                    setState(() {
+                      specialFocusNode.requestFocus();
+                    });
+                  },
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(8)
                     ),
+                    padding: const EdgeInsets.all(8),
+                    margin: const EdgeInsets.only(bottom: 18),
+                    child: SingleChildScrollView(
+                     // reverse: true,
+                      child: AutoDirection(
+                        text:contentText,
+                        onDirectionChange: (isRtl){
+                          setState(() {
+                                  isRTL = isRtl;
+                                });
+                        },
+                        child: AppTextField(
+                          onChanged: (src){
+                            setState(() {
+                             contentText = src;
+                             print(contentText);
+                            });
+                          },
+                            size: 18,
+                          focusNode: specialFocusNode,
+                            hint: 'Contents...',
+                           controller: content,
+                            textInput: TextInputType.multiline,
+                        ),
+                      ),
 
+                    ),
                   ),
                 ),
               ),
@@ -114,15 +156,13 @@ final dateCreated = DateFormat.yMMMEd().format(DateTime.now());
                   MaterialButton(onPressed: (){
 
 
-                    final newNote = Note(title: title.text,  content: content.text, date: DateFormat.yMMMEd().format(DateTime.now()));
+                    final newNote = Note(title: title.text,  content: content.text, date: createdDate);
 
                     if(widget.title != null && widget.content != null) {
                       notesBox.putAt(widget.index!, newNote);
                     }else{
                       notesBox.add(newNote);
                     }
-
-
                     Navigator.pop(context);
                   }, child: const Text("Save", style: TextStyle(fontWeight: FontWeight.bold, fontSize: 20),),),
                   MaterialButton(onPressed: (){
