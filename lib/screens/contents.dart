@@ -7,11 +7,12 @@ import 'package:auto_direction/auto_direction.dart';
 
 
 class Content extends StatefulWidget {
-  const  Content({Key? key, this.title, this.content, this.index}) : super(key: key);
+  const  Content({Key? key, this.title, this.content, this.index, this.isFavorite}) : super(key: key);
 
   final String? title;
   final String? content;
   final int? index;
+  final bool? isFavorite;
 
 
   @override
@@ -21,6 +22,7 @@ class Content extends StatefulWidget {
 class _ContentState extends State<Content> {
 
   late FocusNode specialFocusNode;
+  bool isSelected = false;
   @override
   void initState() {
     //create the FocusNode as soon as the page is created
@@ -30,6 +32,7 @@ class _ContentState extends State<Content> {
     if(widget.title != null && widget.content != null){
       title.text = widget.title!;
       content.text = widget.content!;
+      isSelected = widget.isFavorite!;
     }
   }
 
@@ -48,11 +51,12 @@ class _ContentState extends State<Content> {
   final createdDate = dateFormat.DateFormat('h:mm a, d MMMM y').format(DateTime.now());
 
 
-  bool isRTL = false;
+   bool isRTL = false;
   String titleText = "";
   String contentText = "";
 
   bool isFocused = false;
+
 
 
   @override
@@ -71,8 +75,27 @@ class _ContentState extends State<Content> {
                   IconButton(onPressed: (){
                     Navigator.pop(context);
                   }, icon: const Icon(Icons.arrow_back, size: 40,)),
-                  const Icon(Icons.bookmark_border_outlined, size: 35,),
+                  GestureDetector(
+                      onTap: (){
+                        setState(() {
+                          if(!isSelected){
+                            isSelected = true;
+                            final newNote = Note(title: title.text,  content: content.text, date: createdDate, isFavorite: isSelected);
 
+                            if(widget.title != null && widget.content != null) {
+                              savedNote.putAt(widget.index!, newNote);
+                            }else{
+                              savedNote.add(newNote);
+                            }
+                          }else{
+                            isSelected =false;
+                          }
+                        });
+
+                      },
+                      child: Icon(
+                        isSelected? Icons.favorite : Icons.favorite_border,
+                        size: 35,color: isSelected? Colors.red: Colors.grey,)),
                 ],
               ),
               const SizedBox(
@@ -155,8 +178,7 @@ class _ContentState extends State<Content> {
                 children: [
                   MaterialButton(onPressed: (){
 
-
-                    final newNote = Note(title: title.text,  content: content.text, date: createdDate);
+                    final newNote = Note(title: title.text,  content: content.text, date: createdDate, isFavorite:isSelected);
 
                     if(widget.title != null && widget.content != null) {
                       notesBox.putAt(widget.index!, newNote);
